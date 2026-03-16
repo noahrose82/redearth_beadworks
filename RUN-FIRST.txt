@@ -1,0 +1,5 @@
+1. Start Docker containers from infra/ with: docker compose up -d
+2. In Eclipse, delete backend/target if it exists.
+3. Maven > Update Project, then Project > Clean.
+4. Run RedEarthApplication as Spring Boot App.
+5. Frontend: in frontend folder run npm install then npm run dev.
