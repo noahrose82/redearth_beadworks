@@ -1,3 +1,4 @@
+
 package com.redearth.service;
 
 import java.util.List;
@@ -17,6 +18,7 @@ import com.redearth.web.error.NotFoundException;
 
 @Service
 public class OrdersService {
+
     private final OrderRepository orders;
     private final OrderItemRepository items;
     private final ProductRepository products;
@@ -30,22 +32,35 @@ public class OrdersService {
     public List<OrderDtos.OrderSummary> myOrders() {
         Long userId = requireUser();
         return orders.findByUserIdOrderByCreatedAtDesc(userId).stream()
-                .map(o -> new OrderDtos.OrderSummary(o.getId(), o.getStatus(), o.getTotalCents(), o.getCreatedAt()))
+                .map(o -> new OrderDtos.OrderSummary(
+                        o.getId(),
+                        o.getStatus(),
+                        o.getTotalCents(),
+                        o.getCreatedAt()
+                ))
                 .toList();
     }
 
     public OrderDtos.OrderDetail get(Long orderId) {
         Long userId = requireUser();
-        OrderEntity order = orders.findById(orderId).orElseThrow(() -> new NotFoundException("Order not found"));
-        if (order.getUserId() != null && !order.getUserId().equals(userId) && !SecurityUtil.hasRole("ADMIN")) {
+
+        OrderEntity order = orders.findById(orderId)
+                .orElseThrow(() -> new NotFoundException("Order not found"));
+
+        if (order.getUserId() != null
+                && !order.getUserId().equals(userId)
+                && !SecurityUtil.hasRole("ADMIN")) {
             throw new NotFoundException("Order not found");
         }
+
         List<OrderItemEntity> list = items.findByOrderId(orderId);
         return OrderDtos.OrderDetail.from(order, list);
     }
 
     @Transactional
     public OrderDtos.OrderDetail createOrderFromCart(OrderDtos.CreateOrderRequest req) {
+        Long userId = requireUser();
+
         if (req.items == null || req.items.isEmpty()) {
             throw new IllegalArgumentException("Cart is empty");
         }
@@ -53,11 +68,9 @@ public class OrdersService {
         int total = 0;
         OrderEntity order = new OrderEntity();
 
-        // Guest checkout for Milestone 4
-        order.setUserId(requireUser());
+        order.setUserId(userId);
         order.setStatus("NEW");
 
-        // Price check from Mongo catalog
         for (OrderDtos.CartItem ci : req.items) {
             ProductDoc p = products.findById(ci.productId)
                     .orElseThrow(() -> new IllegalArgumentException("Invalid product"));
@@ -68,7 +81,9 @@ public class OrdersService {
         OrderEntity saved = orders.save(order);
 
         for (OrderDtos.CartItem ci : req.items) {
-            ProductDoc p = products.findById(ci.productId).orElseThrow();
+            ProductDoc p = products.findById(ci.productId)
+                    .orElseThrow(() -> new IllegalArgumentException("Invalid product"));
+
             OrderItemEntity item = new OrderItemEntity();
             item.setOrderId(saved.getId());
             item.setProductId(p.getId());

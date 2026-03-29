@@ -9,7 +9,8 @@ import Cart from './pages/Cart'
 import Checkout from './pages/Checkout'
 import Account from './pages/Account'
 import Admin from './pages/Admin'
-
+import ARTryOn from './pages/ARTryOn'
+ 
 function Nav() {
   const { user, logout } = useAuth()
   const { items } = useCart()
@@ -29,7 +30,7 @@ function Nav() {
           <button className="btn secondary" onClick={logout}>Logout</button>
         </>
       ) : (
-        <Link to="/account" className="nav-link">Login</Link>
+        <Link to="/account" className="nav-link">Login/Register</Link>
       )}
     </div>
   )
@@ -52,16 +53,32 @@ export default function App() {
     <AuthProvider>
       <CartProvider>
         <Nav />
-        <div className="container">
+
+        <div className="container" style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+          <div style={{ flex: 1 }}>
           <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/shop" element={<Shop />} />
-            <Route path="/product/:id" element={<Product />} />
-            <Route path="/cart" element={<Cart />} />
-            <Route path="/checkout" element={<RequireAuth><Checkout /></RequireAuth>} />
-            <Route path="/account" element={<Account />} />
-            <Route path="/admin" element={<RequireAdmin><Admin /></RequireAdmin>} />
-          </Routes>
+  <Route path="/" element={<Home />} />
+  <Route path="/shop" element={<Shop />} />
+  <Route path="/product/:id" element={<Product />} />
+  <Route path="/ar/:id" element={<ARTryOn />} />
+  <Route path="/cart" element={<Cart />} />
+  <Route path="/checkout" element={<RequireAuth><Checkout /></RequireAuth>} />
+  <Route path="/account" element={<Account />} />
+  <Route path="/admin" element={<RequireAdmin><Admin /></RequireAdmin>} />
+</Routes>
+          </div>
+
+          <footer
+            style={{
+              marginTop: 40,
+              padding: 20,
+              textAlign: 'center',
+              fontSize: 13,
+              color: '#ffffff'
+            }}
+          >
+            © {new Date().getFullYear()} Red Earth Beadworks • Full-Stack Capstone Project
+          </footer>
         </div>
       </CartProvider>
     </AuthProvider>
