@@ -1,0 +1,62 @@
+# ========================
+# Node / Angular / Frontend
+# ========================
+node_modules/
+dist/
+build/
+.angular/
+.cache/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ========================
+# Java / Spring Boot / Backend
+# ========================
+target/
+*.class
+*.jar
+*.war
+*.ear
+*.log
+
+# ========================
+# Environment / Secrets
+# ========================
+.env
+.env.*
+*.env
+
+# ========================
+# IDE / Editor Files
+# ========================
+.vscode/
+.idea/
+.vs/
+*.swp
+*.swo
+
+# ========================
+# OS Files
+# ========================
+.DS_Store
+Thumbs.db
+
+# ========================
+# Logs
+# ========================
+logs/
+*.log
+
+# ========================
+# Coverage / Testing
+# ========================
+coverage/
+
+# ========================
+# Misc
+# ========================
+*.zip
+*.tar
+*.gz
+*.rar
