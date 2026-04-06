@@ -1,0 +1,72 @@
+warning: in the working copy of 'backend/src/main/java/com/redearth/security/SecurityConfig.java', LF will be replaced by CRLF the next time Git touches it
+[1mdiff --git a/backend/.settings/org.eclipse.jdt.core.prefs b/backend/.settings/org.eclipse.jdt.core.prefs[m
+[1mindex 7a07eac..484c98c 100644[m
+[1m--- a/backend/.settings/org.eclipse.jdt.core.prefs[m
+[1m+++ b/backend/.settings/org.eclipse.jdt.core.prefs[m
+[36m@@ -18,5 +18,5 @@[m [morg.eclipse.jdt.core.compiler.problem.potentialNullReference=warning[m
+ org.eclipse.jdt.core.compiler.problem.reportPreviewFeatures=ignore[m
+ org.eclipse.jdt.core.compiler.problem.syntacticNullAnalysisForFields=enabled[m
+ org.eclipse.jdt.core.compiler.processAnnotations=disabled[m
+[31m-org.eclipse.jdt.core.compiler.release=disabled[m
+[32m+[m[32morg.eclipse.jdt.core.compiler.release=enabled[m
+ org.eclipse.jdt.core.compiler.source=17[m
+[1mdiff --git a/backend/src/main/java/com/redearth/security/SecurityConfig.java b/backend/src/main/java/com/redearth/security/SecurityConfig.java[m
+[1mindex aee5eeb..546f7f9 100644[m
+[1m--- a/backend/src/main/java/com/redearth/security/SecurityConfig.java[m
+[1m+++ b/backend/src/main/java/com/redearth/security/SecurityConfig.java[m
+[36m@@ -4,12 +4,15 @@[m [mimport org.springframework.boot.context.properties.EnableConfigurationProperties[m
+ import org.springframework.context.annotation.Bean;[m
+ import org.springframework.context.annotation.Configuration;[m
+ import org.springframework.security.authentication.AuthenticationManager;[m
+[32m+[m[32mimport org.springframework.security.config.Customizer;[m
+ import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;[m
+ import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;[m
+ import org.springframework.security.config.annotation.web.builders.HttpSecurity;[m
+[32m+[m[32mimport org.springframework.security.config.http.SessionCreationPolicy;[m
+ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;[m
+ import org.springframework.security.crypto.password.PasswordEncoder;[m
+ import org.springframework.security.web.SecurityFilterChain;[m
+[32m+[m[32mimport org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;[m
+ [m
+ @Configuration[m
+ @EnableMethodSecurity[m
+[36m@@ -22,18 +25,26 @@[m [mpublic class SecurityConfig {[m
+     }[m
+ [m
+     @Bean[m
+[31m-public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {[m
+[31m-    http[m
+[31m-        .csrf(csrf -> csrf.disable())[m
+[31m-        .authorizeHttpRequests(auth -> auth[m
+[31m-            .anyRequest().permitAll()[m
+[31m-        );[m
+[32m+[m[32m    public SecurityFilterChain filterChain(HttpSecurity http, JwtAuthFilter jwtAuthFilter) throws Exception {[m
+[32m+[m[32m        http[m
+[32m+[m[32m            .csrf(csrf -> csrf.disable())[m
+[32m+[m[32m            .cors(Customizer.withDefaults())[m
+[32m+[m[32m            .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))[m
+[32m+[m[32m            .authorizeHttpRequests(auth -> auth[m
+[32m+[m[32m                .requestMatchers("/", "/favicon.ico", "/error").permitAll()[m
+[32m+[m[32m                .requestMatchers("/api/auth/**").permitAll()[m
+[32m+[m[32m                .requestMatchers("/api/catalog/products/**").permitAll()[m
+[32m+[m[32m                .requestMatchers("/api/orders/**").permitAll()[m
+[32m+[m[32m                .anyRequest().authenticated()[m
+[32m+[m[32m            );[m
+ [m
+[31m-    return http.build();[m
+[31m-}[m
+[32m+[m[32m        http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);[m
+[32m+[m
+[32m+[m[32m        return http.build();[m
+[32m+[m[32m    }[m
+ [m
+     @Bean[m
+     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {[m
+         return config.getAuthenticationManager();[m
+     }[m
+[31m-}[m
+[32m+[m[32m}[m
+\ No newline at end of file[m
+[1mdiff --git a/backend/target/classes/com/redearth/security/SecurityConfig.class b/backend/target/classes/com/redearth/security/SecurityConfig.class[m
+[1mindex 9df44e1..1ce6768 100644[m
+Binary files a/backend/target/classes/com/redearth/security/SecurityConfig.class and b/backend/target/classes/com/redearth/security/SecurityConfig.class differ
