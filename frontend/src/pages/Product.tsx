@@ -23,13 +23,13 @@ export default function ProductPage() {
 
  useEffect(() => {
   setLoading(true)
-  api.get(`/api/products/${id}`)
+  api.get(`/api/catalog/products/${id}`)
     .then(r => setP(r.data))
     .finally(() => setLoading(false))
 }, [id])
 
   useEffect(() => {
-    api.get('/api/products').then(r => setAllProducts(r.data))
+    api.get('/api/catalog/products').then(r => setAllProducts(r.data))
   }, [])
 
   const relatedProducts = useMemo(() => {

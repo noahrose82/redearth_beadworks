@@ -35,7 +35,7 @@ export default function Admin() {
   const [msg, setMsg] = useState('')
 
   async function loadProducts() {
-    const resp = await api.get('/api/products')
+    const resp = await api.get('/api/catalog/products')
     setProducts(resp.data)
   }
 
