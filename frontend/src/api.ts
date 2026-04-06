@@ -1,7 +1,7 @@
 import axios from 'axios'
-import.meta.env
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8080',
+  baseURL: import.meta.env.VITE_API_URL || ''
 })
 
 api.interceptors.request.use((config) => {
@@ -12,16 +12,5 @@ api.interceptors.request.use((config) => {
   }
   return config
 })
-
-api.interceptors.response.use(
-  res => res,
-  err => {
-    if (err.response?.status === 401) {
-      localStorage.removeItem('jwt')
-      window.location.href = '/account'
-    }
-    return Promise.reject(err)
-  }
-)
 
 export default api
