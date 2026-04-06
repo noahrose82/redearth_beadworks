@@ -36,6 +36,7 @@ export default function Shop() {
               {imageUrl && (
                 <img className="product-thumb" src={imageUrl} alt={p.name} />
               )}
+              <h2 style={{color: 'white'}}>NEW SHOP VERSION</h2>
               <h3 style={{ marginTop: 0 }}>{p.name}</h3>
               <div className="small">{p.description}</div>
               <div style={{ marginTop: 8 }}><strong>${(p.priceCents/100).toFixed(2)}</strong></div>
