@@ -80,10 +80,10 @@ export default function Admin() {
     }
 
     if (editingId) {
-      const resp = await api.put(`/api/products/${editingId}`, cleanDraft)
+      const resp = await api.put(`/api/catalog/products/${editingId}`, cleanDraft)
       setMsg(`Updated ${resp.data.name}`)
     } else {
-      const resp = await api.post('/api/products', cleanDraft)
+      const resp = await api.post('/api/catalog/products', cleanDraft)
       setMsg(`Created ${resp.data.name}`)
     }
 
@@ -95,7 +95,7 @@ export default function Admin() {
   async function removeProduct(id?: string) {
     if (!id) return
     setMsg('')
-    await api.delete(`/api/products/${id}`)
+    await api.delete(`/api/catalog/products/${id}`)
     setMsg('Product deleted')
     if (editingId === id) {
       cancelEdit()

@@ -16,7 +16,7 @@ export default function Shop() {
   const [q, setQ] = useState('')
 
   async function load() {
-    const resp = await api.get('/api/products', { params: q ? { q } : {} })
+    const resp = await api.get('/api/catalog/products', { params: q ? { q } : {} })
     setProducts(resp.data)
   }
 
