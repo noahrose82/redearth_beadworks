@@ -16,7 +16,7 @@ public class MongoSeedConfig {
   @Bean
   public CommandLineRunner seedProducts(ProductRepository repo) {
     return args -> {
-      if (repo.count() > 0) return;
+      repo.deleteAll();
 
       ProductDoc p1 = new ProductDoc();
       p1.setName("Turquoise Bead Bracelet");
