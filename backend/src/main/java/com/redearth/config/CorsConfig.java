@@ -16,7 +16,11 @@ public class CorsConfig {
                 registry.addMapping("/api/**")
                         .allowedOrigins("https://redearth-beadworks.vercel.app")
                         .allowedMethods("*")
-                        .allowedHeaders("*");
+                        .allowedHeaders("*")
+                        .allowedOriginPatterns(
+    "https://redearth-beadworks.vercel.app",
+    "https://redearth-beadworks-*.vercel.app"
+);
             }
         };
     }
