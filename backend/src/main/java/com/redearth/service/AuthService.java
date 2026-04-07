@@ -1,12 +1,14 @@
 package com.redearth.service;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
 import com.redearth.mysql.entity.UserEntity;
 import com.redearth.mysql.repo.UserRepository;
 import com.redearth.security.JwtService;
 import com.redearth.web.dto.AuthResponses;
-import com.redearth.web.error.NotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
 
 @Service
 public class AuthService {
@@ -21,11 +23,13 @@ public class AuthService {
   }
 
   public AuthResponses.LoginResponse login(String email, String password) {
-    UserEntity user = users.findByEmail(email.trim().toLowerCase())
-        .orElseThrow(() -> new NotFoundException("Invalid credentials"));
+    String normalizedEmail = email.trim().toLowerCase();
+
+    UserEntity user = users.findByEmail(normalizedEmail)
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials"));
 
     if (!encoder.matches(password, user.getPasswordHash())) {
-      throw new NotFoundException("Invalid credentials");
+      throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials");
     }
 
     String token = jwtService.issue(user);
@@ -35,8 +39,9 @@ public class AuthService {
   public UserEntity register(String email, String fullName, String password) {
     String e = email.trim().toLowerCase();
     if (users.existsByEmail(e)) {
-      throw new IllegalArgumentException("Email already exists");
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email already exists");
     }
+
     UserEntity u = new UserEntity();
     u.setEmail(e);
     u.setFullName(fullName.trim());
@@ -46,6 +51,7 @@ public class AuthService {
   }
 
   public UserEntity getById(Long id) {
-    return users.findById(id).orElseThrow(() -> new NotFoundException("User not found"));
+    return users.findById(id)
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
   }
 }
