@@ -19,10 +19,12 @@ type Intent = {
 
 export default function Checkout() {
   const { items, totalCents, clear } = useCart()
+
   const [order, setOrder] = useState<OrderDetail | null>(null)
   const [intent, setIntent] = useState<Intent | null>(null)
   const [msg, setMsg] = useState('')
-const [processing, setProcessing] = useState(false)
+  const [processing, setProcessing] = useState(false)
+
   const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
   const [cardName, setCardName] = useState('')
@@ -39,69 +41,102 @@ const [processing, setProcessing] = useState(false)
     setMsg('')
     setErr('')
 
-    const resp = await api.post('/api/orders', {
-      items: items.map(i => ({
-        productId: i.productId,
-        quantity: i.quantity
-      }))
-    })
+    const token = localStorage.getItem('jwt')
+    if (!token) {
+      setErr('You must be logged in to place an order.')
+      return
+    }
 
-async function confirmPayment() {
-  setProcessing(true)
-  try {
-    // existing code
-  } finally {
-    setProcessing(false)
-  }
-}
+    if (items.length === 0) {
+      setErr('Cart is empty')
+      return
+    }
 
-    setOrder(resp.data)
+    try {
+      const resp = await api.post('/api/orders', {
+        items: items.map(i => ({
+          productId: i.productId,
+          quantity: i.quantity,
+        })),
+      })
+
+      setOrder(resp.data)
+    } catch (e) {
+      console.error(e)
+      setErr('Failed to create order')
+    }
   }
 
   async function createIntent() {
     if (!order) return
+
     setErr('')
+    setMsg('')
 
-    const resp = await api.post('/api/checkout/intent', {
-      orderId: order.id
-    })
+    try {
+      const resp = await api.post('/api/checkout/intent', {
+        orderId: order.id,
+      })
 
-    setIntent(resp.data)
+      setIntent(resp.data)
+    } catch (e) {
+      console.error(e)
+      setErr('Failed to create payment intent')
+    }
   }
 
   async function confirmPayment() {
     if (!order || !intent) return
 
+    setProcessing(true)
     setErr('')
     setMsg('')
 
-    if (!fullName || !email || !cardName || !cardNumber || !expiry || !cvv || !address || !city || !state || !zip) {
-      setErr('Please complete all payment and billing fields.')
-      return
+    try {
+      if (
+        !fullName ||
+        !email ||
+        !cardName ||
+        !cardNumber ||
+        !expiry ||
+        !cvv ||
+        !address ||
+        !city ||
+        !state ||
+        !zip
+      ) {
+        setErr('Please complete all payment and billing fields.')
+        return
+      }
+
+      if (cardNumber.replace(/\s/g, '').length < 12) {
+        setErr('Please enter a valid card number.')
+        return
+      }
+
+      if (cvv.length < 3) {
+        setErr('Please enter a valid CVV.')
+        return
+      }
+
+      if (items.length === 0) {
+        setErr('Cart is empty')
+        return
+      }
+
+      const resp = await api.post('/api/checkout/confirm', {
+        orderId: order.id,
+        intentId: intent.intentId,
+      })
+
+      setMsg(`Payment ${resp.data.paymentStatus}. Order is now ${resp.data.orderStatus}.`)
+      clear()
+    } catch (e) {
+      console.error(e)
+      setErr('Failed to confirm payment')
+    } finally {
+      setProcessing(false)
     }
-
-    if (cardNumber.replace(/\s/g, '').length < 12) {
-      setErr('Please enter a valid card number.')
-      return
-    }
-
-    if (cvv.length < 3) {
-      setErr('Please enter a valid CVV.')
-      return
-    }
-
-    if (items.length === 0) {
-  setErr('Cart is empty')
-  return
-}
-
-    const resp = await api.post('/api/checkout/confirm', {
-      orderId: order.id,
-      intentId: intent.intentId
-    })
-
-    setMsg(`Payment ${resp.data.paymentStatus}. Order is now ${resp.data.orderStatus}.`)
-    clear()
   }
 
   if (items.length === 0 && !order) {
@@ -109,7 +144,9 @@ async function confirmPayment() {
       <div className="card">
         <h2>Checkout</h2>
         <p className="small">Your cart is empty.</p>
-        <Link to="/shop" className="btn">Return to Shop</Link>
+        <Link to="/shop" className="btn">
+          Return to Shop
+        </Link>
       </div>
     )
   }
@@ -215,10 +252,14 @@ async function confirmPayment() {
           {items.map(i => (
             <div key={i.productId} className="row" style={{ justifyContent: 'space-between' }}>
               <div>
-                <div><strong>{i.name}</strong></div>
+                <div>
+                  <strong>{i.name}</strong>
+                </div>
                 <div className="small">Qty: {i.quantity}</div>
               </div>
-              <div><strong>${((i.priceCents * i.quantity) / 100).toFixed(2)}</strong></div>
+              <div>
+                <strong>${((i.priceCents * i.quantity) / 100).toFixed(2)}</strong>
+              </div>
             </div>
           ))}
         </div>
@@ -229,9 +270,7 @@ async function confirmPayment() {
           <strong>Total</strong>
           <strong>${(totalCents / 100).toFixed(2)}</strong>
         </div>
-<button className="btn" disabled={processing}>
-  {processing ? 'Processing...' : 'Confirm Payment'}
-</button>
+
         {!order ? (
           <button className="btn" onClick={createOrder}>
             Create Order
@@ -253,8 +292,8 @@ async function confirmPayment() {
             <div className="small" style={{ marginBottom: 8 }}>
               Payment Provider: {intent.provider}
             </div>
-            <button className="btn" onClick={confirmPayment}>
-              Confirm Payment
+            <button className="btn" onClick={confirmPayment} disabled={processing}>
+              {processing ? 'Processing...' : 'Confirm Payment'}
             </button>
           </div>
         )}
