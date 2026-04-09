@@ -22,10 +22,10 @@ The system includes authentication, product browsing, shopping cart functionalit
 
 ```mermaid
 flowchart LR
-    A[User Browser] --> B[React Frontend (Vercel)]
-    B --> C[Spring Boot API (Railway)]
-    C --> D[MongoDB (Products)]
-    C --> E[MySQL (Users & Orders)]
+    A[User Browser] --> B["React Frontend<br/>Vercel"]
+    B --> C["Spring Boot API<br/>Railway"]
+    C --> D["MongoDB<br/>Products"]
+    C --> E["MySQL<br/>Users & Orders"]
 ```
 
 ---
@@ -149,3 +149,8 @@ POST /api/checkout/confirm
 Noah Rose  
 Doreen Rose  
 
+---
+
+## GitHub
+
+https://github.com/noahrose82/redearth_beadworks
