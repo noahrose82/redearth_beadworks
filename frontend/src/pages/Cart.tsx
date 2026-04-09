@@ -2,8 +2,10 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useCart } from '../cart'
 
 export default function CartPage() {
-  const { items, remove, totalCents } = useCart()
+  const { items, remove, clear, totalCents } = useCart()
   const nav = useNavigate()
+
+  const totalItems = items.reduce((sum, item) => sum + item.quantity, 0)
 
   return (
     <div>
@@ -52,6 +54,9 @@ export default function CartPage() {
                       <div className="product-description">
                         ${(i.priceCents / 100).toFixed(2)} × {i.quantity}
                       </div>
+                      <div className="product-description" style={{ marginTop: 4 }}>
+                        Item Total: ${((i.priceCents * i.quantity) / 100).toFixed(2)}
+                      </div>
                     </div>
 
                     <button className="btn secondary" onClick={() => remove(i.productId)}>
@@ -68,7 +73,7 @@ export default function CartPage() {
 
             <div className="meta-list">
               <div className="meta-item">
-                <strong>Items:</strong> {items.length}
+                <strong>Items:</strong> {totalItems}
               </div>
               <div className="meta-item">
                 <strong>Estimated Total:</strong> ${(totalCents / 100).toFixed(2)}
@@ -95,6 +100,11 @@ export default function CartPage() {
               <button className="btn" onClick={() => nav('/checkout')}>
                 Proceed to Checkout
               </button>
+
+              <button className="btn secondary" onClick={clear}>
+                Clear Cart
+              </button>
+
               <Link to="/shop" className="btn secondary">
                 Continue Shopping
               </Link>

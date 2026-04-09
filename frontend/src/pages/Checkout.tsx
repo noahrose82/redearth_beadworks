@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import api from '../api'
 import { useCart } from '../cart'
 
@@ -19,6 +19,7 @@ type Intent = {
 
 export default function Checkout() {
   const { items, totalCents, clear } = useCart()
+  const navigate = useNavigate()
 
   const [order, setOrder] = useState<OrderDetail | null>(null)
   const [intent, setIntent] = useState<Intent | null>(null)
@@ -119,18 +120,20 @@ export default function Checkout() {
         return
       }
 
-      if (items.length === 0) {
-        setErr('Cart is empty')
-        return
-      }
-
       const resp = await api.post('/api/checkout/confirm', {
         orderId: order.id,
         intentId: intent.intentId,
       })
 
       setMsg(`Payment ${resp.data.paymentStatus}. Order is now ${resp.data.orderStatus}.`)
+
       clear()
+      setOrder(null)
+      setIntent(null)
+
+      setTimeout(() => {
+        navigate('/account')
+      }, 1000)
     } catch (e) {
       console.error(e)
       setErr('Failed to confirm payment')
