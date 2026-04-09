@@ -13,11 +13,9 @@ export default function Account() {
   const { user, login, logout } = useAuth()
 
   const [mode, setMode] = useState<'login' | 'register'>('login')
-
-  const [email, setEmail] = useState('customer@redearth.local')
-  const [password, setPassword] = useState('Customer123!')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   const [fullName, setFullName] = useState('')
-
   const [orders, setOrders] = useState<OrderSummary[]>([])
   const [err, setErr] = useState('')
   const [msg, setMsg] = useState('')
@@ -40,9 +38,8 @@ export default function Account() {
       await api.post('/api/auth/register', {
         email,
         fullName,
-        password
+        password,
       })
-
       setMsg('Registration successful. You can now log in.')
       setMode('login')
     } catch {
@@ -51,8 +48,13 @@ export default function Account() {
   }
 
   async function loadOrders() {
-    const resp = await api.get('/api/orders/mine')
-    setOrders(resp.data)
+    setErr('')
+    try {
+      const resp = await api.get('/api/orders/mine')
+      setOrders(resp.data)
+    } catch {
+      setErr('Failed to load orders')
+    }
   }
 
   if (!user) {
@@ -128,10 +130,6 @@ export default function Account() {
 
         {err && <p className="small" style={{ color: 'darkred', marginTop: 12 }}>{err}</p>}
         {msg && <p className="small" style={{ color: 'green', marginTop: 12 }}>{msg}</p>}
-
-        <p className="small" style={{ marginTop: 12 }}>
-          Demo users: admin@redearth.local / Admin123! and customer@redearth.local / Customer123!
-        </p>
       </div>
     )
   }
@@ -147,6 +145,8 @@ export default function Account() {
         <button className="btn secondary" onClick={loadOrders}>Load My Orders</button>
         <button className="btn secondary" onClick={logout}>Logout</button>
       </div>
+
+      {err && <p className="small" style={{ color: 'darkred', marginTop: 12 }}>{err}</p>}
 
       {orders.length > 0 && (
         <div style={{ marginTop: 12 }}>
