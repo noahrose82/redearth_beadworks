@@ -1,70 +1,151 @@
-# Red Earth Bead Works — Full-Stack Capstone (MySQL + MongoDB)
+# 🌵 Red Earth Bead Works
+### Full-Stack E-Commerce Platform | Capstone Project
 
-This project implements the architecture described in the **Red Earth Bead Works Final Architecture Plan (Milestone 3)**:
-- React SPA (React Router + Axios)
-- Spring Boot 3.x backend secured with Spring Security + JWT
-- Dual-database approach:
-  - **MySQL** (orders, users, payments, addresses)
-  - **MongoDB** (catalog/product documents + flexible attributes)
+---
 
-> Note: Stripe integration is implemented as a **safe stub** for local development (no keys required).
-> You can wire real Stripe Payment Intents later by setting environment variables and swapping the stub service.
+## 🔗 Live Application
 
-## Prerequisites
-- Docker Desktop
-- Java 17+
-- Maven 3.9+
-- Node 18+
+- **Frontend (Vercel):** https://redearth-beadworks.vercel.app  
+- **Backend (Railway):** https://redearthbeadworks-production.up.railway.app  
 
-## Start Databases (MySQL + MongoDB)
-```bash
-cd infra
-docker compose up -d
+---
+
+## 📌 Overview
+
+Red Earth Bead Works is a fully deployed, production-ready full-stack web application supporting a handcrafted jewelry business.
+
+The system includes authentication, product browsing, shopping cart functionality, and order processing using a cloud-based architecture.
+
+---
+
+## 🧱 System Architecture
+
+```mermaid
+flowchart LR
+    A[User Browser] --> B[React Frontend (Vercel)]
+    B --> C[Spring Boot API (Railway)]
+    C --> D[MongoDB (Products)]
+    C --> E[MySQL (Users & Orders)]
 ```
 
-## Run Backend
-```bash
-cd backend
-mvn spring-boot:run
+---
+
+## 🏗️ Architecture Pattern
+
+```mermaid
+flowchart TD
+    UI[Frontend UI] --> API[REST Controllers]
+    API --> SERVICE[Business Logic Layer]
+    SERVICE --> DATA[Data Access Layer]
+    DATA --> DB[(Databases)]
 ```
-Backend: http://localhost:8080
 
-## Run Frontend
-```bash
-cd frontend
-npm install
-npm run dev
+---
+
+## 🔐 Authentication Flow
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant Frontend
+    participant Backend
+
+    User->>Frontend: Login
+    Frontend->>Backend: POST /login
+    Backend-->>Frontend: JWT Token
+    Frontend->>Backend: Authenticated Requests
 ```
-Frontend: http://localhost:5173
 
-## Default Accounts
-- Admin: `admin@redearth.local` / `Admin123!`
-- Customer: `customer@redearth.local` / `Customer123!`
+---
 
-## Key API Routes
-- Auth:
-  - POST `/api/auth/register`
-  - POST `/api/auth/login`
-  - GET `/api/auth/me`
-- Catalog (Mongo):
-  - GET `/api/catalog/products`
-  - GET `/api/catalog/products/{id}`
-  - POST `/api/catalog/products` (ADMIN)
-  - PUT `/api/catalog/products/{id}` (ADMIN)
-  - DELETE `/api/catalog/products/{id}` (ADMIN)
-- Orders/Checkout (MySQL):
-  - POST `/api/orders` (create order from cart)
-  - GET `/api/orders/mine`
-  - GET `/api/orders/{id}`
-  - POST `/api/checkout/intent` (creates a **stub** payment intent)
-  - POST `/api/checkout/confirm` (confirms payment + stores Payment record)
+## 🧰 Tech Stack
 
-## Project Layout
-- `infra/` docker compose for MySQL & MongoDB
-- `backend/` Spring Boot app (JWT auth, catalog, orders, payments)
-- `frontend/` React SPA (routes: Home, Shop, Product, Cart, Checkout, Account, Admin)
+Frontend:
+- React
+- TypeScript
+- Vite
 
-## Notes
-- Passwords stored with BCrypt hashing.
-- JWT is stored in browser localStorage for this demo.
-- CORS is enabled for localhost dev.
+Backend:
+- Java 17
+- Spring Boot
+- Spring Security (JWT)
+
+Databases:
+- MongoDB
+- MySQL
+
+Deployment:
+- Vercel
+- Railway
+
+---
+
+## ⚙️ Features
+
+- JWT Authentication
+- Product Catalog
+- Shopping Cart
+- Order Processing
+- Cloud Deployment
+
+---
+
+## 📦 API Endpoints
+
+Auth:
+POST /api/auth/login  
+POST /api/auth/register  
+
+Products:
+GET /api/catalog/products  
+
+Orders:
+POST /api/orders  
+GET /api/orders/mine  
+
+Checkout:
+POST /api/checkout/intent  
+POST /api/checkout/confirm  
+
+---
+
+## 🧪 Testing
+
+| Test | Result |
+|------|-------|
+| Login | Pass |
+| Order Creation | Pass |
+| Fetch Orders | Pass |
+
+---
+
+## 📊 Traceability Matrix
+
+| Requirement | Code |
+|------------|------|
+| Login | AuthService |
+| Orders | OrdersService |
+
+---
+
+## ⚠️ Challenges
+
+- CORS issues → fixed with SecurityConfig
+- Deployment errors → resolved in Railway
+- JWT setup → secured endpoints
+
+---
+
+## 🔮 Future Improvements
+
+- Stripe integration
+- Admin dashboard
+- Notifications
+
+---
+
+## 👨‍💻 Authors
+
+Noah Rose  
+Doreen Rose  
+
