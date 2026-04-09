@@ -39,8 +39,10 @@ public class SecurityConfig {
   CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration config = new CorsConfiguration();
 
-    config.setAllowedOrigins(List.of(
-        "https://redearth-beadworks.vercel.app"
+    config.setAllowedOriginPatterns(List.of(
+        "https://redearth-beadworks.vercel.app",
+        "https://redearth-beadworks-*.vercel.app",
+        "http://localhost:5173"
     ));
 
     config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
