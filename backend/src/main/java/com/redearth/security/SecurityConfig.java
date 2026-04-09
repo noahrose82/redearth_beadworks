@@ -34,7 +34,7 @@ public class SecurityConfig {
                 .requestMatchers("/", "/favicon.ico", "/error").permitAll()
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/catalog/products/**").permitAll()
-                .requestMatchers("/api/orders/**").permitAll()
+                .requestMatchers("/api/orders/**").authenticated()
                 .anyRequest().authenticated()
             );
 

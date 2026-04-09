@@ -1,4 +1,3 @@
-
 package com.redearth.service;
 
 import java.util.List;
@@ -31,13 +30,13 @@ public class OrdersService {
 
     public List<OrderDtos.OrderSummary> myOrders() {
         Long userId = requireUser();
+
         return orders.findByUserIdOrderByCreatedAtDesc(userId).stream()
                 .map(o -> new OrderDtos.OrderSummary(
                         o.getId(),
                         o.getStatus(),
                         o.getTotalCents(),
-                        o.getCreatedAt()
-                ))
+                        o.getCreatedAt()))
                 .toList();
     }
 
@@ -61,40 +60,49 @@ public class OrdersService {
     public OrderDtos.OrderDetail createOrderFromCart(OrderDtos.CreateOrderRequest req) {
         Long userId = requireUser();
 
-        if (req.items == null || req.items.isEmpty()) {
+        if (req == null || req.items == null || req.items.isEmpty()) {
             throw new IllegalArgumentException("Cart is empty");
         }
 
-        int total = 0;
-        OrderEntity order = new OrderEntity();
+        int totalCents = 0;
 
+        OrderEntity order = new OrderEntity();
         order.setUserId(userId);
         order.setStatus("NEW");
 
-        for (OrderDtos.CartItem ci : req.items) {
-            ProductDoc p = products.findById(ci.productId)
+        for (OrderDtos.CreateOrderItem ci : req.items) {
+            if (ci == null || ci.productId == null || ci.productId.isBlank()) {
+                throw new IllegalArgumentException("Invalid product");
+            }
+
+            if (ci.quantity == null || ci.quantity < 1) {
+                throw new IllegalArgumentException("Invalid quantity");
+            }
+
+            ProductDoc product = products.findById(ci.productId)
                     .orElseThrow(() -> new IllegalArgumentException("Invalid product"));
-            total += p.getPriceCents() * ci.quantity;
+
+            totalCents += product.getPriceCents() * ci.quantity;
         }
 
-        order.setTotalCents(total);
-        OrderEntity saved = orders.save(order);
+        order.setTotalCents(totalCents);
+        OrderEntity savedOrder = orders.save(order);
 
-        for (OrderDtos.CartItem ci : req.items) {
-            ProductDoc p = products.findById(ci.productId)
+        for (OrderDtos.CreateOrderItem ci : req.items) {
+            ProductDoc product = products.findById(ci.productId)
                     .orElseThrow(() -> new IllegalArgumentException("Invalid product"));
 
             OrderItemEntity item = new OrderItemEntity();
-            item.setOrderId(saved.getId());
-            item.setProductId(p.getId());
-            item.setProductName(p.getName());
-            item.setUnitPriceCents(p.getPriceCents());
+            item.setOrderId(savedOrder.getId());
+            item.setProductId(product.getId());
+            item.setProductName(product.getName());
+            item.setUnitPriceCents(product.getPriceCents());
             item.setQuantity(ci.quantity);
             items.save(item);
         }
 
-        List<OrderItemEntity> list = items.findByOrderId(saved.getId());
-        return OrderDtos.OrderDetail.from(saved, list);
+        List<OrderItemEntity> savedItems = items.findByOrderId(savedOrder.getId());
+        return OrderDtos.OrderDetail.from(savedOrder, savedItems);
     }
 
     private Long requireUser() {

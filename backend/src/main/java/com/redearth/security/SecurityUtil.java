@@ -14,19 +14,11 @@ public final class SecurityUtil {
 
     Object principal = auth.getPrincipal();
 
-    if (principal instanceof Long id) {
-      return id;
-    }
-
-    if (principal instanceof Integer id) {
-      return id.longValue();
-    }
+    if (principal instanceof Long id) return id;
+    if (principal instanceof Integer id) return id.longValue();
 
     if (principal instanceof String str) {
-      if (str.isBlank() || "anonymousUser".equals(str)) {
-        return null;
-      }
-
+      if (str.isBlank() || "anonymousUser".equals(str)) return null;
       try {
         return Long.parseLong(str);
       } catch (NumberFormatException e) {
@@ -39,10 +31,7 @@ public final class SecurityUtil {
 
   public static boolean hasRole(String role) {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    if (auth == null) {
-      return false;
-    }
-
+    if (auth == null) return false;
     return auth.getAuthorities().stream()
         .anyMatch(a -> a.getAuthority().equals("ROLE_" + role));
   }

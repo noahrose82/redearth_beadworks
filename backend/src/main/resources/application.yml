@@ -3,15 +3,15 @@ server:
 
 app:
   jwt:
-    issuer: "${JWT_ISSUER:redearth-beadworks}"
-    secret: "${JWT_SECRET:redearth_super_secret_key_32bytes_minimum!!}"
+    issuer: ${JWT_ISSUER:redearth-beadworks}
+    secret: ${JWT_SECRET:redearth_super_secret_key_32bytes_minimum!!}
     expirationMinutes: ${JWT_EXPIRATION_MINUTES:120}
 
 spring:
   datasource:
-    url: "${SPRING_DATASOURCE_URL}"
-    username: "${SPRING_DATASOURCE_USERNAME}"
-    password: "${SPRING_DATASOURCE_PASSWORD}"
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
@@ -21,14 +21,14 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
-      
+
   sql:
     init:
       mode: never
 
   data:
     mongodb:
-      uri: "${MONGODB_URI}"
+      uri: ${MONGODB_URI}
 
 logging:
   level:
