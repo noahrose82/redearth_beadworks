@@ -144,6 +144,62 @@ POST /api/checkout/confirm
 
 ---
 
+ ## 📸 Screenshots & System Demonstration
+
+### 🏠 Home Page – Product Catalog
+![Home Page](./screenshots/home.png)
+
+**Description:**  
+Displays the product catalog retrieved from the backend API. Users can browse handcrafted jewelry items with pricing and descriptions. This demonstrates successful frontend-to-backend communication and MongoDB product retrieval.
+
+---
+
+### 🔍 Product Detail Page
+![Product Detail](./screenshots/product.png)
+
+**Description:**  
+Shows detailed product information including images, pricing, and attributes. Users can select items and add them to the shopping cart. This validates dynamic routing and data binding.
+
+---
+
+### 🛒 Shopping Cart
+![Cart](./screenshots/cart.png)
+
+**Description:**  
+Displays selected products with quantities and total pricing. Users can remove items or proceed to checkout. This demonstrates frontend state management and cart persistence.
+
+---
+
+### 🔐 Login / Authentication
+![Login](./screenshots/login.png)
+
+**Description:**  
+Allows users to securely authenticate using email and password. JWT tokens are generated upon successful login and stored for authenticated API requests.
+
+---
+
+### 📦 Orders Page (Account)
+![Orders](./screenshots/orders.png)
+
+**Description:**  
+Displays user-specific order history retrieved from the backend. This confirms secure API access and proper linkage between users and orders in MySQL.
+
+---
+
+### 📡 API Testing (Postman)
+![API Testing](./screenshots/api.png)
+
+**Description:**  
+Demonstrates successful API responses for authentication, product retrieval, and order endpoints. Confirms backend functionality and RESTful design.
+
+---
+
+### ☁️ Deployment (Railway + Vercel)
+![Deployment](./screenshots/deployment.png)
+
+**Description:**  
+Shows the live deployment of the backend on Railway and frontend on Vercel. Confirms successful cloud hosting and system accessibility. -->
+
 ## 👨‍💻 Authors
 
 Noah Rose  
